@@ -1,24 +1,13 @@
 from fastapi import FastAPI
+from database import engine
+from Routers import birthday
 import models as m
-from database import engine, SessionLocal
 import uvicorn
 
 app = FastAPI()
 m.Base.metadata.create_all(bind=engine)
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-@app.get("/")
-async def root():
-    return {"root": "there is not shit here wtf dude chill"}
+app.include_router(birthday.router)
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", reload=True)
+    uvicorn.run("main:app", reload=True, port=8080)
