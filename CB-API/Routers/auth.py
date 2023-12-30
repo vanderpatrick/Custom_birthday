@@ -3,9 +3,12 @@ from pydantic import BaseModel
 from database import SessionLocal
 from typing import Annotated
 from sqlalchemy.orm import Session
+from passlib.context import CryptContext
 import models as m
 
 router = APIRouter()
+
+bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated='auto')
 
 
 def get_db():
@@ -40,7 +43,7 @@ async def create_new_user(db: db_dependency, new_user_request: CreateUserRequest
         email=new_user_request.email,
         first_name=new_user_request.first_name,
         last_name=new_user_request.last_name,
-        hashed_password=new_user_request.password,
+        hashed_password=bcrypt_context.hash(new_user_request.password),
         role=new_user_request.role,
     )
     db.add(new_user)
